@@ -1,0 +1,288 @@
+/* ========================================
+   SERVICE DISPATCH — CUSTOM THEME OVERRIDES
+   Loaded on all frontend pages
+   ======================================== */
+
+/* ── Footer ── */
+.sd-footer {
+    background: #0f172a;
+    color: #cbd5e1;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.sd-footer-main {
+    padding: 48px 0 32px;
+}
+
+.sd-footer-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr 1fr;
+    gap: 40px;
+}
+
+.sd-footer-col h4 {
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+
+.sd-footer-col p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #94a3b8;
+}
+
+.sd-footer-col ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sd-footer-col ul li {
+    margin-bottom: 10px;
+}
+
+.sd-footer-col ul li a {
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.2s;
+}
+
+.sd-footer-col ul li a:hover {
+    color: #60a5fa;
+}
+
+.sd-footer-bottom {
+    border-top: 1px solid #1e293b;
+    padding: 20px 0;
+    text-align: center;
+}
+
+.sd-footer-bottom p {
+    margin: 0;
+    font-size: 13px;
+    color: #64748b;
+}
+
+/* ── Registration Form Enhancements ── */
+.woocommerce-form-register select[name="role"] {
+    padding: 10px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    background: white;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='%2394a3b8'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+}
+
+.woocommerce-form-register select[name="role"]:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.woocommerce-form-register .form-control {
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    padding: 10px 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.woocommerce-form-register .form-control:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* ── WooCommerce My Account Dashboard Cards ── */
+.sd-wc-dashboard {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.sd-wc-welcome h2 {
+    font-size: 22px;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 4px;
+}
+
+.sd-wc-welcome p {
+    color: #64748b;
+    margin-bottom: 24px;
+}
+
+.sd-wc-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+}
+
+.sd-wc-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 28px 24px;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 1px solid #e2e8f0;
+}
+
+.sd-wc-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+    text-decoration: none;
+}
+
+.sd-wc-card .dashicons {
+    font-size: 36px;
+    width: 36px;
+    height: 36px;
+    margin-bottom: 12px;
+}
+
+.sd-wc-card h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 6px;
+}
+
+.sd-wc-card p {
+    font-size: 13px;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.sd-wc-card-vendor {
+    background: linear-gradient(135deg, #fef3c7, #fff7ed);
+    border-color: #fde68a;
+}
+
+.sd-wc-card-vendor .dashicons { color: #d97706; }
+.sd-wc-card-vendor h3 { color: #92400e; }
+.sd-wc-card-vendor p { color: #a16207; }
+
+.sd-wc-card-client {
+    background: linear-gradient(135deg, #dbeafe, #eff6ff);
+    border-color: #93c5fd;
+}
+
+.sd-wc-card-client .dashicons { color: #2563eb; }
+.sd-wc-card-client h3 { color: #1e3a8a; }
+.sd-wc-card-client p { color: #1d4ed8; }
+
+.sd-wc-card-new {
+    background: linear-gradient(135deg, #d1fae5, #ecfdf5);
+    border-color: #6ee7b7;
+}
+
+.sd-wc-card-new .dashicons { color: #059669; }
+.sd-wc-card-new h3 { color: #065f46; }
+.sd-wc-card-new p { color: #047857; }
+
+.sd-wc-card-admin {
+    background: linear-gradient(135deg, #e0e7ff, #eef2ff);
+    border-color: #a5b4fc;
+}
+
+.sd-wc-card-admin .dashicons { color: #4f46e5; }
+.sd-wc-card-admin h3 { color: #312e81; }
+.sd-wc-card-admin p { color: #4338ca; }
+
+/* ── WooCommerce Account Nav Enhancements ── */
+.woocommerce-MyAccount-navigation ul li a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    transition: background 0.2s, color 0.2s;
+    text-decoration: none;
+    color: #475569;
+    font-weight: 500;
+}
+
+.woocommerce-MyAccount-navigation ul li a:hover {
+    background: #f1f5f9;
+    color: #1e293b;
+}
+
+.woocommerce-MyAccount-navigation ul li.is-active a {
+    background: #3b82f6;
+    color: white;
+}
+
+/* ── Header Button Override ── */
+.submit-job .btn-second {
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.submit-job .btn-second:hover {
+    background: #2563eb;
+    color: white;
+}
+
+/* ── Fluent Form Styling Enhancements ── */
+.fluentform .ff-el-input--label label {
+    font-weight: 600;
+    color: #374151;
+    font-size: 14px;
+}
+
+.fluentform .ff-el-form-control {
+    border-radius: 8px !important;
+    border: 1px solid #d1d5db !important;
+    padding: 10px 14px !important;
+    transition: border-color 0.2s, box-shadow 0.2s !important;
+}
+
+.fluentform .ff-el-form-control:focus {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+}
+
+.fluentform .ff-btn-submit {
+    background: #3b82f6 !important;
+    border: none !important;
+    padding: 12px 28px !important;
+    border-radius: 8px !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    transition: background 0.2s !important;
+}
+
+.fluentform .ff-btn-submit:hover {
+    background: #2563eb !important;
+}
+
+.fluentform .ff-el-section-break .ff-el-section-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1e293b;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 8px;
+    margin-bottom: 16px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+    .sd-footer-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+
+    .sd-wc-cards {
+        grid-template-columns: 1fr;
+    }
+}

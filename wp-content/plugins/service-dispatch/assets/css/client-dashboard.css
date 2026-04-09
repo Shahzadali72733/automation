@@ -1,0 +1,670 @@
+/* ========================================
+   SERVICE DISPATCH — CLIENT DASHBOARD CSS
+   ======================================== */
+
+.sd-client-dash {
+    max-width: 1100px;
+    margin: 0 auto;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* -- Header -- */
+.sd-client-dash .sd-dash-header {
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.sd-client-dash .sd-dash-welcome {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.sd-client-dash .sd-dash-avatar img {
+    border-radius: 50%;
+    border: 3px solid rgba(255, 255, 255, 0.2);
+}
+
+.sd-client-dash .sd-dash-welcome h2 {
+    color: white;
+    margin: 0;
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.sd-client-dash .sd-dash-role {
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+.sd-client-dash .sd-dash-quick-stats {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.sd-client-dash .sd-qs-card {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 14px 20px;
+    text-align: center;
+    min-width: 110px;
+    backdrop-filter: blur(10px);
+}
+
+.sd-client-dash .sd-qs-num {
+    display: block;
+    font-size: 26px;
+    font-weight: 700;
+    color: white;
+    line-height: 1;
+}
+
+.sd-client-dash .sd-qs-label {
+    font-size: 11px;
+    color: #94a3b8;
+    margin-top: 4px;
+    display: block;
+}
+
+.sd-client-dash .sd-qs-blue .sd-qs-num { color: #60a5fa; }
+.sd-client-dash .sd-qs-orange .sd-qs-num { color: #fb923c; }
+.sd-client-dash .sd-qs-green .sd-qs-num { color: #4ade80; }
+
+/* -- Tabs -- */
+.sd-client-dash .sd-dash-tabs {
+    display: flex;
+    gap: 4px;
+    background: #f1f5f9;
+    border-radius: 12px;
+    padding: 4px;
+    margin-bottom: 24px;
+    overflow-x: auto;
+}
+
+.sd-client-dash .sd-tab {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 18px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.sd-client-dash .sd-tab:hover {
+    color: #1e293b;
+    background: rgba(255, 255, 255, 0.6);
+}
+
+.sd-client-dash .sd-tab.active {
+    background: white;
+    color: #1e293b;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.sd-client-dash .sd-tab .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+/* -- Overview Grid -- */
+.sd-overview-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 20px;
+}
+
+.sd-overview-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 24px;
+}
+
+.sd-overview-card h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0 0 16px;
+}
+
+/* -- Service Tracker -- */
+.sd-tracker {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding-left: 24px;
+}
+
+.sd-tracker::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
+    background: #e2e8f0;
+}
+
+.sd-tracker-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 10px 0;
+    position: relative;
+}
+
+.sd-tracker-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid #d1d5db;
+    background: white;
+    position: absolute;
+    left: -24px;
+    top: 12px;
+    z-index: 1;
+    flex-shrink: 0;
+}
+
+.sd-tracker-step.completed .sd-tracker-dot {
+    background: #22c55e;
+    border-color: #22c55e;
+}
+
+.sd-tracker-step.current .sd-tracker-dot {
+    background: #3b82f6;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+}
+
+.sd-tracker-step.pending .sd-tracker-dot {
+    background: white;
+    border-color: #d1d5db;
+}
+
+.sd-tracker-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.sd-tracker-info strong {
+    font-size: 14px;
+    color: #1e293b;
+}
+
+.sd-tracker-step.pending .sd-tracker-info strong {
+    color: #94a3b8;
+}
+
+.sd-tracker-info span {
+    font-size: 12px;
+    color: #64748b;
+}
+
+.sd-tracker-step.pending .sd-tracker-info span {
+    color: #cbd5e1;
+}
+
+/* -- Mini List -- */
+.sd-mini-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.sd-mini-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 8px;
+    transition: background 0.15s;
+}
+
+.sd-mini-item:hover {
+    background: #f8fafc;
+}
+
+.sd-mini-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.sd-mini-info {
+    flex: 1;
+}
+
+.sd-mini-info strong {
+    display: block;
+    font-size: 13px;
+    color: #1e293b;
+}
+
+.sd-mini-date {
+    font-size: 11px;
+    color: #94a3b8;
+}
+
+.sd-mini-badge {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+.sd-muted {
+    color: #94a3b8;
+    font-style: italic;
+    text-align: center;
+    padding: 20px;
+}
+
+/* -- Job Cards (Client) -- */
+.sd-client-dash .sd-job-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+}
+
+.sd-client-dash .sd-job-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px;
+    transition: box-shadow 0.2s, transform 0.15s;
+}
+
+.sd-client-dash .sd-job-card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+}
+
+.sd-client-dash .sd-jc-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.sd-client-dash .sd-jc-id {
+    font-size: 12px;
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+.sd-client-dash .sd-jc-urgency {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+}
+
+.sd-client-dash .sd-jc-urgency.urgent { background: #fef2f2; color: #ef4444; }
+.sd-client-dash .sd-jc-urgency.priority { background: #fffbeb; color: #d97706; }
+
+.sd-client-dash .sd-jc-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-left: auto;
+}
+
+.sd-client-dash .sd-jc-service {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0 0 10px;
+}
+
+.sd-client-dash .sd-jc-details {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 14px;
+}
+
+.sd-client-dash .sd-jc-detail {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #475569;
+}
+
+.sd-client-dash .sd-jc-detail .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: #94a3b8;
+}
+
+/* -- Progress Bar -- */
+.sd-jc-progress {
+    margin-top: 4px;
+}
+
+.sd-progress-bar {
+    height: 6px;
+    background: #e2e8f0;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+
+.sd-progress-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.4s ease;
+}
+
+.sd-progress-text {
+    font-size: 11px;
+    color: #94a3b8;
+}
+
+/* -- Invoice List -- */
+.sd-invoice-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sd-invoice-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    transition: box-shadow 0.15s;
+}
+
+.sd-invoice-row:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.sd-invoice-row.paid {
+    border-left: 3px solid #22c55e;
+}
+
+.sd-invoice-row.unpaid {
+    border-left: 3px solid #f59e0b;
+}
+
+.sd-inv-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.sd-inv-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+}
+
+.sd-invoice-row.paid .sd-inv-icon {
+    color: #22c55e;
+}
+
+.sd-invoice-row.unpaid .sd-inv-icon {
+    color: #f59e0b;
+}
+
+.sd-inv-date {
+    display: block;
+    font-size: 12px;
+    color: #94a3b8;
+}
+
+.sd-inv-right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.sd-inv-amount {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.sd-inv-status {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+}
+
+.sd-inv-status.paid {
+    background: #ecfdf5;
+    color: #059669;
+}
+
+.sd-inv-status.unpaid {
+    background: #fffbeb;
+    color: #d97706;
+}
+
+/* -- History Table -- */
+.sd-history-table-wrap {
+    overflow-x: auto;
+}
+
+.sd-history-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+}
+
+.sd-history-table thead th {
+    background: #f8fafc;
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.sd-history-table tbody td {
+    padding: 12px 16px;
+    font-size: 14px;
+    color: #1e293b;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.sd-history-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+.sd-tbl-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+/* -- Empty Card -- */
+.sd-client-dash .sd-empty-card {
+    text-align: center;
+    padding: 48px 24px;
+    background: #f8fafc;
+    border: 2px dashed #e2e8f0;
+    border-radius: 12px;
+}
+
+.sd-client-dash .sd-empty-card .dashicons {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+    color: #cbd5e1;
+    margin-bottom: 12px;
+}
+
+.sd-client-dash .sd-empty-card h4 {
+    color: #64748b;
+    margin: 0 0 8px;
+}
+
+.sd-client-dash .sd-empty-card p {
+    color: #94a3b8;
+    margin: 0;
+}
+
+/* -- Profile Form -- */
+.sd-client-dash .sd-profile-form {
+    max-width: 600px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 24px;
+}
+
+.sd-client-dash .sd-form-row {
+    margin-bottom: 18px;
+}
+
+.sd-client-dash .sd-form-row label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 6px;
+}
+
+.sd-client-dash .sd-input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+}
+
+.sd-client-dash .sd-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.sd-client-dash .sd-input:disabled {
+    background: #f9fafb;
+    color: #6b7280;
+}
+
+.sd-client-dash .sd-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+}
+
+.sd-client-dash .sd-btn-primary {
+    background: #3b82f6;
+    color: white;
+}
+
+.sd-client-dash .sd-btn-primary:hover {
+    background: #2563eb;
+    color: white;
+}
+
+/* -- Notices -- */
+.sd-client-dash .sd-notice {
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    font-size: 14px;
+}
+
+.sd-client-dash .sd-notice-success {
+    background: #ecfdf5;
+    color: #059669;
+    border: 1px solid #a7f3d0;
+}
+
+/* -- Login Prompt -- */
+.sd-client-dash .sd-login-prompt {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+}
+
+.sd-client-dash .sd-login-card {
+    text-align: center;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 48px;
+    max-width: 400px;
+}
+
+/* -- Section Title -- */
+.sd-client-dash .sd-section-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 16px;
+}
+
+/* -- Responsive -- */
+@media (max-width: 768px) {
+    .sd-client-dash .sd-dash-header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 20px;
+    }
+
+    .sd-overview-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .sd-client-dash .sd-job-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .sd-client-dash .sd-dash-tabs {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}

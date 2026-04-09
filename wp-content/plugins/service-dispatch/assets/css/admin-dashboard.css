@@ -1,0 +1,496 @@
+/* ========================================
+   SERVICE DISPATCH — ADMIN DASHBOARD CSS
+   ======================================== */
+
+/* -- Pipeline Page Header -- */
+.sd-pipeline-wrap {
+    max-width: 100%;
+    margin-top: 10px;
+}
+
+.sd-pipeline-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.sd-pipeline-header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+}
+
+.sd-pipeline-header h1 .dashicons {
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+    color: #3b82f6;
+}
+
+.sd-pipeline-subtitle {
+    display: block;
+    font-size: 13px;
+    color: #64748b;
+    margin-top: 4px;
+}
+
+.sd-pipeline-header-right {
+    display: flex;
+    gap: 8px;
+}
+
+.sd-btn-add,
+.sd-btn-refresh {
+    display: flex !important;
+    align-items: center;
+    gap: 4px;
+}
+
+.sd-btn-add .dashicons,
+.sd-btn-refresh .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+/* -- Stats Cards -- */
+.sd-pipeline-stats {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.sd-stat-card {
+    flex: 1;
+    min-width: 140px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-top: 3px solid var(--stat-color);
+    transition: box-shadow 0.2s;
+}
+
+.sd-stat-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.sd-stat-num {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--stat-color);
+    line-height: 1;
+}
+
+.sd-stat-label {
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 4px;
+    text-align: center;
+}
+
+/* -- Pipeline Board (Kanban) -- */
+.sd-pipeline-board {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 20px;
+    min-height: 500px;
+}
+
+.sd-pipeline-column {
+    min-width: 260px;
+    max-width: 300px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: #f8fafc;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+}
+
+.sd-column-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 14px;
+    border-bottom: 2px solid var(--col-color);
+    background: white;
+}
+
+.sd-column-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.sd-column-title .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: var(--col-color);
+}
+
+.sd-column-count {
+    background: var(--col-color);
+    color: white;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+    min-width: 20px;
+    text-align: center;
+}
+
+.sd-column-body {
+    flex: 1;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 100px;
+}
+
+.sd-column-body.sd-drag-over {
+    background: #eff6ff;
+    border: 2px dashed #3b82f6;
+    border-radius: 8px;
+}
+
+/* -- Pipeline Job Cards -- */
+.sd-pipeline-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px;
+    cursor: grab;
+    transition: box-shadow 0.15s, transform 0.1s;
+    position: relative;
+}
+
+.sd-pipeline-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
+}
+
+.sd-pipeline-card:active {
+    cursor: grabbing;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.sd-pipeline-card.sd-urgency-urgent {
+    border-left: 3px solid #ef4444;
+}
+
+.sd-pipeline-card.sd-urgency-priority {
+    border-left: 3px solid #f59e0b;
+}
+
+.sd-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.sd-card-id {
+    font-size: 11px;
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+.sd-card-urgency {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+}
+
+.sd-card-urgency.urgent {
+    background: #fef2f2;
+    color: #ef4444;
+}
+
+.sd-card-urgency.priority {
+    background: #fffbeb;
+    color: #d97706;
+}
+
+.sd-card-title {
+    display: block;
+    font-weight: 600;
+    font-size: 13px;
+    color: #1e293b;
+    text-decoration: none;
+    margin-bottom: 2px;
+    line-height: 1.3;
+}
+
+.sd-card-title:hover {
+    color: #3b82f6;
+}
+
+.sd-card-company {
+    font-size: 12px;
+    color: #64748b;
+    display: block;
+    margin-bottom: 6px;
+}
+
+.sd-card-service {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: #475569;
+    margin-bottom: 6px;
+}
+
+.sd-card-service .dashicons {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    color: #94a3b8;
+}
+
+.sd-card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 11px;
+    color: #64748b;
+}
+
+.sd-card-meta span {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.sd-card-meta .dashicons {
+    font-size: 13px;
+    width: 13px;
+    height: 13px;
+    color: #94a3b8;
+}
+
+.sd-card-vendor {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: #7c3aed;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #f1f5f9;
+}
+
+.sd-card-vendor .dashicons {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+}
+
+/* -- Page Headers -- */
+.sd-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.sd-page-header h1 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sd-page-header h1 .dashicons {
+    color: #3b82f6;
+}
+
+/* -- Vendor & Client Grid -- */
+.sd-vendors-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+}
+
+.sd-vendor-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 20px;
+    transition: box-shadow 0.2s;
+}
+
+.sd-vendor-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.sd-vc-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.sd-vc-avatar img {
+    border-radius: 50%;
+}
+
+.sd-vc-info h3 {
+    margin: 0;
+    font-size: 15px;
+    color: #1e293b;
+}
+
+.sd-vc-email {
+    font-size: 12px;
+    color: #64748b;
+}
+
+.sd-vc-status {
+    margin-left: auto;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+}
+
+.sd-vc-status-active {
+    background: #ecfdf5;
+    color: #059669;
+}
+
+.sd-vc-status-probation {
+    background: #fffbeb;
+    color: #d97706;
+}
+
+.sd-vc-status-suspended {
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+.sd-vc-detail {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #475569;
+    margin-bottom: 8px;
+}
+
+.sd-vc-detail .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: #94a3b8;
+}
+
+.sd-vc-stats {
+    display: flex;
+    gap: 16px;
+    margin: 12px 0;
+    padding: 10px;
+    background: #f8fafc;
+    border-radius: 8px;
+}
+
+.sd-vc-stat {
+    flex: 1;
+    text-align: center;
+}
+
+.sd-vc-stat-num {
+    display: block;
+    font-size: 20px;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.sd-vc-stat-label {
+    font-size: 11px;
+    color: #64748b;
+}
+
+.sd-vc-actions {
+    text-align: right;
+}
+
+/* -- Empty States -- */
+.sd-empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    grid-column: 1 / -1;
+}
+
+.sd-empty-state .dashicons {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    color: #cbd5e1;
+    margin-bottom: 12px;
+}
+
+.sd-empty-state h3 {
+    color: #64748b;
+    margin-bottom: 8px;
+}
+
+.sd-empty-state p {
+    color: #94a3b8;
+}
+
+/* -- Settings Form -- */
+.sd-settings-form {
+    max-width: 700px;
+}
+
+.sd-settings-section {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+}
+
+.sd-settings-section h2 {
+    font-size: 16px;
+    color: #1e293b;
+    margin-top: 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+/* -- Sortable Placeholder -- */
+.ui-sortable-placeholder {
+    background: #eff6ff !important;
+    border: 2px dashed #93c5fd !important;
+    border-radius: 8px;
+    min-height: 60px;
+    visibility: visible !important;
+}
+
+.ui-sortable-helper {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+    transform: rotate(2deg);
+    opacity: 0.9;
+}

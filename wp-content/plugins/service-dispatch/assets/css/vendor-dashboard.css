@@ -1,0 +1,598 @@
+/* ========================================
+   SERVICE DISPATCH — VENDOR DASHBOARD CSS
+   ======================================== */
+
+.sd-vendor-dash {
+    max-width: 1100px;
+    margin: 0 auto;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* -- Header -- */
+.sd-dash-header {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.sd-dash-welcome {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.sd-dash-avatar img {
+    border-radius: 50%;
+    border: 3px solid rgba(255, 255, 255, 0.2);
+}
+
+.sd-dash-welcome h2 {
+    color: white;
+    margin: 0;
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.sd-dash-role {
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+.sd-dash-quick-stats {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.sd-qs-card {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 14px 20px;
+    text-align: center;
+    min-width: 110px;
+    backdrop-filter: blur(10px);
+}
+
+.sd-qs-num {
+    display: block;
+    font-size: 26px;
+    font-weight: 700;
+    color: white;
+    line-height: 1;
+}
+
+.sd-qs-label {
+    font-size: 11px;
+    color: #94a3b8;
+    margin-top: 4px;
+    display: block;
+}
+
+.sd-qs-blue .sd-qs-num { color: #60a5fa; }
+.sd-qs-orange .sd-qs-num { color: #fb923c; }
+.sd-qs-green .sd-qs-num { color: #4ade80; }
+
+/* -- Tabs -- */
+.sd-dash-tabs {
+    display: flex;
+    gap: 4px;
+    background: #f1f5f9;
+    border-radius: 12px;
+    padding: 4px;
+    margin-bottom: 24px;
+    overflow-x: auto;
+}
+
+.sd-tab {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 18px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.sd-tab:hover {
+    color: #1e293b;
+    background: rgba(255, 255, 255, 0.6);
+}
+
+.sd-tab.active {
+    background: white;
+    color: #1e293b;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.sd-tab .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+/* -- Sections -- */
+.sd-section-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 16px;
+}
+
+/* -- Job Grid -- */
+.sd-job-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+}
+
+/* -- Job Cards -- */
+.sd-job-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px;
+    transition: box-shadow 0.2s, transform 0.15s;
+}
+
+.sd-job-card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+}
+
+.sd-card-urgent {
+    border-left: 4px solid #ef4444;
+}
+
+.sd-card-priority {
+    border-left: 4px solid #f59e0b;
+}
+
+.sd-jc-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.sd-jc-id {
+    font-size: 12px;
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+.sd-jc-urgency {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+}
+
+.sd-jc-urgency.urgent {
+    background: #fef2f2;
+    color: #ef4444;
+}
+
+.sd-jc-urgency.priority {
+    background: #fffbeb;
+    color: #d97706;
+}
+
+.sd-jc-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-left: auto;
+}
+
+.sd-jc-service {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0 0 10px;
+}
+
+.sd-jc-details {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 14px;
+}
+
+.sd-jc-detail {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #475569;
+}
+
+.sd-jc-detail .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: #94a3b8;
+}
+
+.sd-jc-pay {
+    font-weight: 700;
+    color: #059669 !important;
+    font-size: 15px !important;
+}
+
+.sd-jc-full-details {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* -- Action Buttons -- */
+.sd-jc-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.sd-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    line-height: 1;
+}
+
+.sd-btn .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+.sd-btn-primary {
+    background: #3b82f6;
+    color: white;
+}
+
+.sd-btn-primary:hover {
+    background: #2563eb;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.sd-btn-success {
+    background: #22c55e;
+    color: white;
+}
+
+.sd-btn-success:hover {
+    background: #16a34a;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
+.sd-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* -- Empty Cards -- */
+.sd-empty-card {
+    text-align: center;
+    padding: 48px 24px;
+    background: #f8fafc;
+    border: 2px dashed #e2e8f0;
+    border-radius: 12px;
+}
+
+.sd-empty-card .dashicons {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+    color: #cbd5e1;
+    margin-bottom: 12px;
+}
+
+.sd-empty-card h4 {
+    color: #64748b;
+    margin: 0 0 8px;
+}
+
+.sd-empty-card p {
+    color: #94a3b8;
+    margin: 0;
+}
+
+/* -- List Items -- */
+.sd-job-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sd-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    transition: box-shadow 0.15s;
+}
+
+.sd-list-item:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.sd-li-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.sd-li-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.sd-li-sub {
+    display: block;
+    font-size: 12px;
+    color: #94a3b8;
+}
+
+.sd-li-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.sd-li-pay {
+    font-weight: 700;
+    color: #059669;
+}
+
+.sd-li-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+/* -- Earnings Cards -- */
+.sd-earnings-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+}
+
+.sd-earn-card {
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.sd-earn-green {
+    background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+    border: 1px solid #a7f3d0;
+}
+
+.sd-earn-yellow {
+    background: linear-gradient(135deg, #fffbeb, #fef3c7);
+    border: 1px solid #fde68a;
+}
+
+.sd-earn-blue {
+    background: linear-gradient(135deg, #eff6ff, #dbeafe);
+    border: 1px solid #93c5fd;
+}
+
+.sd-earn-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #64748b;
+    margin-bottom: 4px;
+}
+
+.sd-earn-amount {
+    font-size: 32px;
+    font-weight: 700;
+    color: #1e293b;
+    line-height: 1;
+}
+
+.sd-earn-sub {
+    font-size: 12px;
+    color: #94a3b8;
+    margin-top: 6px;
+}
+
+/* -- Profile Form -- */
+.sd-profile-form {
+    max-width: 600px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 24px;
+}
+
+.sd-form-row {
+    margin-bottom: 18px;
+}
+
+.sd-form-row label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 6px;
+}
+
+.sd-input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+}
+
+.sd-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.sd-input:disabled {
+    background: #f9fafb;
+    color: #6b7280;
+}
+
+.sd-checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 8px;
+}
+
+.sd-checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+    font-size: 13px;
+}
+
+.sd-checkbox-item:hover {
+    background: #f8fafc;
+    border-color: #93c5fd;
+}
+
+.sd-checkbox-item input:checked + span {
+    color: #2563eb;
+    font-weight: 500;
+}
+
+/* -- Notices -- */
+.sd-notice {
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    font-size: 14px;
+}
+
+.sd-notice-success {
+    background: #ecfdf5;
+    color: #059669;
+    border: 1px solid #a7f3d0;
+}
+
+/* -- Login Prompt -- */
+.sd-login-prompt {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+}
+
+.sd-login-card {
+    text-align: center;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 48px;
+    max-width: 400px;
+}
+
+.sd-login-card .dashicons {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    color: #94a3b8;
+    margin-bottom: 12px;
+}
+
+.sd-login-card h2 {
+    color: #1e293b;
+    margin-bottom: 8px;
+}
+
+.sd-login-card p {
+    color: #64748b;
+    margin-bottom: 20px;
+}
+
+/* -- Access Denied -- */
+.sd-access-denied {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.sd-access-denied h2 {
+    color: #ef4444;
+}
+
+/* -- Responsive -- */
+@media (max-width: 768px) {
+    .sd-dash-header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 20px;
+    }
+
+    .sd-dash-quick-stats {
+        width: 100%;
+    }
+
+    .sd-qs-card {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .sd-dash-tabs {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .sd-job-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .sd-earnings-cards {
+        grid-template-columns: 1fr;
+    }
+}
