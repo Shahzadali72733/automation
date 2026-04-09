@@ -110,6 +110,19 @@ function sd_override_nav_menu_labels($menus) {
 }
 add_filter('registered_nav_menus', 'sd_override_nav_menu_labels');
 
+// Map sd_client role to candidate-menu so clients see the right account menu
+function sd_fix_account_menu_location($args) {
+    if (!is_user_logged_in() || empty($args['theme_location'])) return $args;
+    if ($args['theme_location'] !== 'top-menu') return $args;
+
+    $user = wp_get_current_user();
+    if (in_array('sd_client', $user->roles)) {
+        $args['theme_location'] = 'candidate-menu';
+    }
+    return $args;
+}
+add_filter('wp_nav_menu_args', 'sd_fix_account_menu_location');
+
 // ──────────────────────────────────────────────
 // 5. OVERRIDE HEADER "POST A JOB" BUTTON
 //    Parent calls entaro_submit_job_resume() directly in templates,
@@ -297,23 +310,19 @@ function sd_create_required_pages_once() {
 // 10. CREATE FLUENT FORMS PROGRAMMATICALLY
 // ──────────────────────────────────────────────
 function sd_create_fluent_forms() {
-    if (get_option('sd_forms_created')) return;
+    $current_version = 3;
+    if ((int) get_option('sd_forms_version', 0) >= $current_version) return;
     if (!function_exists('wpFluent')) return;
 
     global $wpdb;
     $table = $wpdb->prefix . 'fluentform_forms';
     if (!$wpdb->get_var("SHOW TABLES LIKE '$table'")) return;
 
-    // Form 1: Service Request Form
     sd_create_service_request_form();
-
-    // Form 2: Vendor Registration / Onboarding Form
     sd_create_vendor_registration_form();
-
-    // Form 3: Client Onboarding Form
     sd_create_client_onboarding_form();
 
-    update_option('sd_forms_created', true);
+    update_option('sd_forms_version', $current_version);
 }
 add_action('admin_init', 'sd_create_fluent_forms', 20);
 
@@ -322,7 +331,6 @@ function sd_create_service_request_form() {
     $table = $wpdb->prefix . 'fluentform_forms';
 
     $existing = $wpdb->get_var($wpdb->prepare("SELECT id FROM $table WHERE title = %s", 'Commercial Service Request'));
-    if ($existing) return;
 
     $form_fields = json_encode([
         'fields' => [
@@ -366,9 +374,10 @@ function sd_create_service_request_form() {
             sd_ff_text('sd_onsite_phone', 'On-Site Contact Phone', true, 'phone', '+1 (555) 000-0000'),
             sd_ff_textarea('sd_access_instructions', 'Access Instructions', false, 'Lockbox, key holder, check-in desk, loading dock info...'),
 
-            // Section 5: Photos
-            sd_ff_section_break('Photos / File Upload'),
-            sd_ff_file_upload('sd_photos', 'Upload Photos', false, 'Photos help us quote and dispatch faster.'),
+            // Section 5: Photos & Documents
+            sd_ff_section_break('Photos & Documents'),
+            sd_ff_image_upload('sd_photos', 'Photos of the Issue / Area', false, 'Upload clear photos of the issue or work area. This helps us quote and dispatch faster.', 10),
+            sd_ff_file_upload('sd_documents', 'Supporting Documents', false, 'Upload any related documents (floor plans, POs, scope sheets, etc.)'),
 
             // Section 6: Consent
             sd_ff_section_break('Pricing Disclosure + Consent'),
@@ -393,34 +402,56 @@ function sd_create_service_request_form() {
         ],
     ]);
 
-    $wpdb->insert($table, [
-        'title'               => 'Commercial Service Request',
-        'status'              => 'published',
-        'appearance_settings' => null,
-        'form_fields'         => $form_fields,
-        'has_payment'         => 0,
-        'type'                => 'form',
-        'conditions'          => null,
-        'created_at'          => current_time('mysql'),
-        'updated_at'          => current_time('mysql'),
-    ]);
-
-    $form_id = $wpdb->insert_id;
+    if ($existing) {
+        $form_id = (int) $existing;
+        $wpdb->update($table, [
+            'status'              => 'published',
+            'appearance_settings' => null,
+            'form_fields'         => $form_fields,
+            'has_payment'         => 0,
+            'type'                => 'form',
+            'conditions'          => null,
+            'updated_at'          => current_time('mysql'),
+        ], ['id' => $form_id]);
+    } else {
+        $wpdb->insert($table, [
+            'title'               => 'Commercial Service Request',
+            'status'              => 'published',
+            'appearance_settings' => null,
+            'form_fields'         => $form_fields,
+            'has_payment'         => 0,
+            'type'                => 'form',
+            'conditions'          => null,
+            'created_at'          => current_time('mysql'),
+            'updated_at'          => current_time('mysql'),
+        ]);
+        $form_id = $wpdb->insert_id;
+    }
 
     // Save form settings meta
     $meta_table = $wpdb->prefix . 'fluentform_form_meta';
-    $wpdb->insert($meta_table, [
-        'form_id'  => $form_id,
-        'meta_key' => 'formSettings',
-        'value'    => json_encode([
-            'confirmation' => [
-                'redirectTo'   => 'samePage',
-                'messageToShow' => '<h3>Request Received</h3><p>Thanks — we received your request. Our team will review details and follow up to confirm scheduling and final pricing.</p>',
-                'samePageFormBehavior' => 'hide_form',
-            ],
-            'layout' => ['labelPlacement' => 'top', 'helpMessagePlacement' => 'with_label', 'asteriskPlacement' => 'asterisk-right'],
-        ]),
+    $form_settings_value = json_encode([
+        'confirmation' => [
+            'redirectTo'   => 'samePage',
+            'messageToShow' => '<h3>Request Received</h3><p>Thanks — we received your request. Our team will review details and follow up to confirm scheduling and final pricing.</p>',
+            'samePageFormBehavior' => 'hide_form',
+        ],
+        'layout' => ['labelPlacement' => 'top', 'helpMessagePlacement' => 'with_label', 'asteriskPlacement' => 'asterisk-right'],
     ]);
+    $meta_exists = $wpdb->get_var($wpdb->prepare(
+        "SELECT id FROM {$meta_table} WHERE form_id = %d AND meta_key = %s",
+        $form_id,
+        'formSettings'
+    ));
+    if ($meta_exists) {
+        $wpdb->update($meta_table, ['value' => $form_settings_value], ['id' => $meta_exists]);
+    } else {
+        $wpdb->insert($meta_table, [
+            'form_id'  => $form_id,
+            'meta_key' => 'formSettings',
+            'value'    => $form_settings_value,
+        ]);
+    }
 
     // Update the service-request page with the form shortcode
     $page = get_page_by_path('service-request');
@@ -596,6 +627,35 @@ function sd_ff_text($name, $label, $required, $type = 'input_text', $placeholder
     elseif ($type === 'phone') { $element = 'phone'; $input_type = 'tel'; }
     elseif ($type === 'input_date') { $element = 'input_date'; $input_type = 'text'; }
 
+    if ($type === 'input_date') {
+        return [
+            'element'    => 'input_date',
+            'uniqElKey'  => 'el_' . substr(md5($name . $label), 0, 8),
+            'attributes' => [
+                'type'        => 'text',
+                'name'        => $name,
+                'value'       => '',
+                'id'          => '',
+                'class'       => '',
+                'placeholder' => $placeholder,
+            ],
+            'settings' => [
+                'container_class'   => '',
+                'label'             => $label,
+                'label_placement'   => '',
+                'admin_field_label' => $name,
+                'help_message'      => '',
+                'validation_rules'  => $required ? ['required' => ['value' => true, 'message' => 'This field is required']] : [],
+                'conditional_logics' => [],
+                'date_format'       => 'm/d/Y',
+                'date_config'       => '{}',
+            ],
+            'editor_options' => [
+                'title' => $label,
+            ],
+        ];
+    }
+
     return [
         'element'    => $element,
         'uniqElKey'  => 'el_' . substr(md5($name . $label), 0, 8),
@@ -715,27 +775,77 @@ function sd_ff_checkbox($name, $label, $required) {
     ];
 }
 
+function sd_ff_image_upload($name, $label, $required, $help = '', $max_count = 10) {
+    return [
+        'element'    => 'input_image',
+        'uniqElKey'  => 'el_' . substr(md5($name . $label), 0, 8),
+        'attributes' => [
+            'type'   => 'file',
+            'name'   => $name,
+            'value'  => '',
+            'id'     => '',
+            'class'  => '',
+            'accept' => 'image/*',
+        ],
+        'settings' => [
+            'container_class'      => '',
+            'label'                => $label,
+            'admin_field_label'    => $name,
+            'label_placement'      => '',
+            'btn_text'             => 'Choose Photos',
+            'upload_file_location' => 'default',
+            'file_location_type'   => 'follow_global_settings',
+            'help_message'         => $help,
+            'upload_bttn_ui'       => '',
+            'validation_rules' => [
+                'required'            => ['value' => $required, 'message' => 'This field is required'],
+                'max_file_size'       => ['value' => 5242880, '_valueFrom' => 'MB', 'message' => 'Maximum file size is 5MB'],
+                'max_file_count'      => ['value' => $max_count, 'message' => 'Maximum ' . $max_count . ' files allowed'],
+                'allowed_image_types' => ['value' => ['jpg', 'jpeg', 'png', 'gif'], 'message' => 'Only jpg, jpeg, png, gif files are allowed'],
+            ],
+            'conditional_logics' => [],
+        ],
+        'editor_options' => [
+            'title'      => $label,
+            'icon_class' => 'ff-edit-images',
+            'template'   => 'inputFile',
+        ],
+    ];
+}
+
 function sd_ff_file_upload($name, $label, $required, $help = '') {
     return [
         'element'    => 'input_file',
         'uniqElKey'  => 'el_' . substr(md5($name . $label), 0, 8),
         'attributes' => [
+            'type'  => 'file',
             'name'  => $name,
-            'value' => [],
+            'value' => '',
             'id'    => '',
             'class' => '',
-            'type'  => 'file',
         ],
         'settings' => [
-            'container_class'   => '',
-            'label'             => $label,
-            'admin_field_label' => $name,
-            'help_message'      => $help,
-            'validation_rules'  => $required ? ['required' => ['value' => true, 'message' => 'This field is required']] : [],
-            'max_file_size'     => ['value' => 5, '_valueFrom' => 'MB'],
-            'max_file_count'    => ['value' => 5],
-            'allowed_file_types' => ['jpg', 'jpeg', 'png', 'gif', 'pdf'],
-            'upload_btn_text'   => 'Upload Photos',
+            'container_class'      => '',
+            'label'                => $label,
+            'admin_field_label'    => $name,
+            'label_placement'      => '',
+            'btn_text'             => 'Choose File',
+            'upload_file_location' => 'default',
+            'file_location_type'   => 'follow_global_settings',
+            'help_message'         => $help,
+            'upload_bttn_ui'       => '',
+            'validation_rules' => [
+                'required'           => ['value' => $required, 'message' => 'This field is required'],
+                'max_file_size'      => ['value' => 10485760, '_valueFrom' => 'MB', 'message' => 'Maximum file size is 10MB'],
+                'max_file_count'     => ['value' => 5, 'message' => 'Maximum 5 files allowed'],
+                'allowed_file_types' => ['value' => ['jpg','jpeg','png','gif','pdf','doc','docx'], 'message' => 'File type not allowed'],
+            ],
+            'conditional_logics' => [],
+        ],
+        'editor_options' => [
+            'title'      => $label,
+            'icon_class' => 'ff-edit-files',
+            'template'   => 'inputFile',
         ],
     ];
 }
@@ -744,7 +854,10 @@ function sd_ff_section_break($title) {
     return [
         'element'   => 'section_break',
         'uniqElKey' => 'el_' . substr(md5($title), 0, 8),
-        'attributes' => [],
+        'attributes' => [
+            'class' => '',
+            'id'    => '',
+        ],
         'settings'  => [
             'label'           => $title,
             'description'     => '',
@@ -829,13 +942,37 @@ function sd_handle_service_request_submission($insertId, $formData, $form) {
         update_post_meta($job_id, $key, sanitize_text_field($value));
     }
 
+    // Store uploaded photos
+    if (!empty($formData['sd_photos'])) {
+        $photos = $formData['sd_photos'];
+        if (is_string($photos)) $photos = json_decode($photos, true) ?: [$photos];
+        if (!is_array($photos)) $photos = [$photos];
+        update_post_meta($job_id, '_sd_photos', array_map('esc_url_raw', $photos));
+    }
+
+    // Store uploaded documents
+    if (!empty($formData['sd_documents'])) {
+        $docs = $formData['sd_documents'];
+        if (is_string($docs)) $docs = json_decode($docs, true) ?: [$docs];
+        if (!is_array($docs)) $docs = [$docs];
+        update_post_meta($job_id, '_sd_documents', array_map('esc_url_raw', $docs));
+    }
+
+    // Store Fluent Forms entry reference for admin lookup
+    update_post_meta($job_id, '_sd_ff_entry_id', $insertId);
+    update_post_meta($job_id, '_sd_ff_form_id', $form->id);
+
+    // Link to logged-in user
+    if (is_user_logged_in()) {
+        update_post_meta($job_id, '_sd_submitted_by', get_current_user_id());
+    }
+
     // Add timeline event
     if (class_exists('SD_Meta_Boxes')) {
         SD_Meta_Boxes::add_timeline_event($job_id, 'Job created from service request form', '#3b82f6');
     }
 }
 add_action('fluentform/submission_inserted', 'sd_handle_service_request_submission', 10, 3);
-// Legacy hook name
 add_action('fluentform_submission_inserted', 'sd_handle_service_request_submission', 10, 3);
 
 // ──────────────────────────────────────────────
@@ -895,3 +1032,50 @@ function sd_flush_rewrites_once() {
     update_option('sd_rewrites_flushed', true);
 }
 add_action('init', 'sd_flush_rewrites_once', 9999);
+
+// ──────────────────────────────────────────────
+// 14. LOGIN GATE — Require login for protected pages
+// ──────────────────────────────────────────────
+function sd_protect_pages_content($content) {
+    if (is_admin() || wp_doing_ajax()) return $content;
+    if (is_user_logged_in()) return $content;
+
+    $protected_slugs = ['service-request', 'vendor-dashboard', 'client-dashboard'];
+    global $post;
+    if (!$post || !in_array($post->post_name, $protected_slugs)) return $content;
+
+    $login_url = get_permalink(get_option('woocommerce_myaccount_page_id'));
+    if (!$login_url) $login_url = wp_login_url();
+
+    ob_start();
+    ?>
+    <div class="sd-login-required">
+        <div class="sd-login-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <h2>Login Required</h2>
+        <p>Please log in or create an account to access this page. Register as a <strong>Client</strong> to request services, or as a <strong>Vendor</strong> to provide services.</p>
+        <div class="sd-login-buttons">
+            <a href="<?php echo esc_url($login_url); ?>" class="sd-btn sd-btn-primary">Login / Register</a>
+        </div>
+    </div>
+    <?php
+    return ob_get_clean();
+}
+add_filter('the_content', 'sd_protect_pages_content', 1);
+
+// Make service-request page full-width (no right sidebar).
+function sd_set_page_layouts() {
+    $pages = ['service-request', 'vendor-dashboard', 'client-dashboard', 'vendor-registration'];
+    foreach ($pages as $slug) {
+        $page = get_page_by_path($slug);
+        if (!$page) continue;
+        if (get_post_meta($page->ID, 'apus_page_layout', true) !== 'main') {
+            update_post_meta($page->ID, 'apus_page_layout', 'main');
+        }
+        if (get_post_meta($page->ID, 'apus_page_fullwidth', true) !== 'yes') {
+            update_post_meta($page->ID, 'apus_page_fullwidth', 'yes');
+        }
+    }
+}
+add_action('admin_init', 'sd_set_page_layouts');

@@ -69,21 +69,27 @@ final class ServiceDispatch {
     }
 
     public function enqueue_frontend_assets() {
-        global $post;
+        global $post, $wp_query;
         $content = ($post && !empty($post->post_content)) ? $post->post_content : '';
+        $is_vendor_page = is_page('vendor-dashboard') || has_shortcode($content, 'sd_vendor_dashboard') || isset($wp_query->query_vars['vendor-portal']);
+        $is_client_page = is_page('client-dashboard') || has_shortcode($content, 'sd_client_dashboard') || isset($wp_query->query_vars['service-requests']);
 
-        if (is_page('vendor-dashboard') || has_shortcode($content, 'sd_vendor_dashboard')) {
+        if ($is_vendor_page || $is_client_page) {
             wp_enqueue_style('dashicons');
-            wp_enqueue_style('sd-vendor-dashboard', SD_PLUGIN_URL . 'assets/css/vendor-dashboard.css', [], SD_VERSION);
+            wp_enqueue_style('sd-saas-dashboard', SD_PLUGIN_URL . 'assets/css/vendor-dashboard.css', [], SD_VERSION);
+            if ($is_client_page) {
+                wp_enqueue_style('sd-client-dashboard', SD_PLUGIN_URL . 'assets/css/client-dashboard.css', ['sd-saas-dashboard'], SD_VERSION);
+            }
+        }
+
+        if ($is_vendor_page) {
             wp_enqueue_script('sd-vendor-dashboard', SD_PLUGIN_URL . 'assets/js/vendor-dashboard.js', ['jquery'], SD_VERSION, true);
             wp_localize_script('sd-vendor-dashboard', 'sdVendor', [
                 'ajaxUrl' => admin_url('admin-ajax.php'),
                 'nonce'   => wp_create_nonce('sd_vendor_nonce'),
             ]);
         }
-        if (is_page('client-dashboard') || has_shortcode($content, 'sd_client_dashboard')) {
-            wp_enqueue_style('dashicons');
-            wp_enqueue_style('sd-client-dashboard', SD_PLUGIN_URL . 'assets/css/client-dashboard.css', [], SD_VERSION);
+        if ($is_client_page) {
             wp_enqueue_script('sd-client-dashboard', SD_PLUGIN_URL . 'assets/js/client-dashboard.js', ['jquery'], SD_VERSION, true);
             wp_localize_script('sd-client-dashboard', 'sdClient', [
                 'ajaxUrl' => admin_url('admin-ajax.php'),
@@ -96,8 +102,11 @@ final class ServiceDispatch {
         $screen = get_current_screen();
         if (!$screen) return;
 
-        $allowed = ['sd_job', 'toplevel_page_sd-pipeline', 'service-dispatch_page_sd-pipeline'];
-        if ($screen->post_type === 'sd_job' || in_array($screen->id, $allowed)) {
+        $is_sd_screen = ($screen->post_type === 'sd_job')
+            || in_array($screen->id, ['toplevel_page_sd-pipeline', 'service-dispatch_page_sd-pipeline'])
+            || (strpos($screen->id, 'sd-') !== false);
+
+        if ($is_sd_screen) {
             wp_enqueue_style('sd-admin-dashboard', SD_PLUGIN_URL . 'assets/css/admin-dashboard.css', [], SD_VERSION);
             wp_enqueue_script('sd-admin-dashboard', SD_PLUGIN_URL . 'assets/js/admin-dashboard.js', ['jquery', 'jquery-ui-sortable'], SD_VERSION, true);
             wp_localize_script('sd-admin-dashboard', 'sdAdmin', [

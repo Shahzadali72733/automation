@@ -286,3 +286,250 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* ── Service Request Page (Full Width + Better Form UI) ── */
+body.page-slug-service-request #main-container .sidebar,
+body.page-slug-service-request #main-container .sidebar-right,
+body.page-slug-service-request #main-container .sidebar-left {
+    display: none !important;
+}
+
+body.page-slug-service-request #main-container #main-content.main-page {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 100% !important;
+}
+
+body.page-slug-service-request .inner.container,
+body.page-slug-service-request .inner.container-fluid {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+body.page-slug-service-request .fluentform {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+}
+
+body.page-slug-service-request .fluentform .ff-el-group {
+    margin-bottom: 16px;
+}
+
+body.page-slug-service-request .fluentform .ff-el-section-break {
+    margin-top: 18px;
+    margin-bottom: 12px;
+}
+
+body.page-slug-service-request .fluentform .ff-el-section-break hr {
+    border-color: #e5e7eb;
+}
+
+/* Service-request fine-tuned spacing and typography */
+body.page-slug-service-request .inner.container,
+body.page-slug-service-request .inner.container-fluid {
+    max-width: 1080px;
+    padding-left: 24px;
+    padding-right: 24px;
+}
+
+body.page-slug-service-request .fluentform {
+    padding: 30px 30px 24px;
+}
+
+body.page-slug-service-request .fluentform .ff-el-group {
+    margin-bottom: 18px;
+}
+
+body.page-slug-service-request .fluentform .ff-el-section-break {
+    margin-top: 26px;
+    margin-bottom: 14px;
+}
+
+body.page-slug-service-request .fluentform .ff-el-section-break .ff-el-section-title {
+    font-size: 20px;
+    line-height: 1.3;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 8px;
+}
+
+body.page-slug-service-request .fluentform .ff-el-input--label label,
+body.page-slug-service-request .fluentform .ff-el-is-required.asterisk-right label {
+    color: #1f2937;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+body.page-slug-service-request .fluentform .ff-el-input--content .ff-el-form-control,
+body.page-slug-service-request .fluentform .ff-el-input--content select.ff-el-form-control,
+body.page-slug-service-request .fluentform .ff-el-input--content textarea.ff-el-form-control {
+    min-height: 46px;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 10px !important;
+    background: #ffffff;
+    color: #0f172a;
+    font-size: 14px;
+    line-height: 1.45;
+    padding: 11px 14px !important;
+}
+
+body.page-slug-service-request .fluentform .ff-el-input--content textarea.ff-el-form-control {
+    min-height: 120px;
+    resize: vertical;
+}
+
+body.page-slug-service-request .fluentform .ff-el-input--content .ff-el-form-control::placeholder {
+    color: #94a3b8;
+}
+
+body.page-slug-service-request .fluentform .ff-el-input--content .ff-el-form-control:focus {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12) !important;
+}
+
+body.page-slug-service-request .fluentform .ff_btn_style,
+body.page-slug-service-request .fluentform .ff-btn-submit {
+    min-height: 46px;
+    padding: 11px 26px !important;
+    border-radius: 10px !important;
+    background: #2563eb !important;
+    color: #fff !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.1px;
+}
+
+body.page-slug-service-request .fluentform .ff_btn_style:hover,
+body.page-slug-service-request .fluentform .ff-btn-submit:hover {
+    background: #1d4ed8 !important;
+}
+
+@media (max-width: 768px) {
+    body.page-slug-service-request .inner.container,
+    body.page-slug-service-request .inner.container-fluid {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+    body.page-slug-service-request .fluentform {
+        padding: 20px 16px 18px;
+        border-radius: 12px;
+    }
+}
+
+/* ── Login Required Gate ── */
+.sd-login-required {
+    text-align: center;
+    padding: 60px 24px;
+    max-width: 520px;
+    margin: 40px auto;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+}
+
+.sd-login-icon {
+    margin-bottom: 20px;
+}
+
+.sd-login-icon svg {
+    display: inline-block;
+}
+
+.sd-login-required h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 10px;
+}
+
+.sd-login-required p {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #475569;
+    margin: 0 0 28px;
+}
+
+.sd-login-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+.sd-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 28px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.sd-btn-primary {
+    background: #2563eb;
+    color: #fff;
+    border: none;
+}
+
+.sd-btn-primary:hover {
+    background: #1d4ed8;
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+/* ── Fluent Form Image Upload Styling ── */
+body.page-slug-service-request .fluentform .ff-el-input--content .ff_file_upload_holder,
+body.page-slug-service-request .fluentform .ff-el-input--content .ff-upload-preview {
+    border: 2px dashed #cbd5e1;
+    border-radius: 12px;
+    padding: 24px;
+    background: #f8fafc;
+    text-align: center;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+body.page-slug-service-request .fluentform .ff-el-input--content .ff_file_upload_holder:hover {
+    border-color: #93c5fd;
+    background: #eff6ff;
+}
+
+body.page-slug-service-request .fluentform .ff-el-input--content .ff_file_upload_holder .ff-btn {
+    background: #3b82f6;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+body.page-slug-service-request .fluentform .ff-el-input--content .ff_file_upload_holder .ff-btn:hover {
+    background: #2563eb;
+}
+
+body.page-slug-service-request .fluentform .ff-uploaded-list {
+    margin-top: 12px;
+}
+
+body.page-slug-service-request .fluentform .ff-uploaded-list .ff-upload-preview-wrapper {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 8px;
+    margin-bottom: 6px;
+    background: #fff;
+}
+
+/* ── Vendor/Client Dashboard Protection ── */
+body.page-slug-vendor-dashboard .sd-login-required,
+body.page-slug-client-dashboard .sd-login-required {
+    margin: 60px auto;
+}

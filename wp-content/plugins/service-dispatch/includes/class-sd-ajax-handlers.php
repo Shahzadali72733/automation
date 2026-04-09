@@ -8,6 +8,9 @@ class SD_Ajax_Handlers {
         add_action('wp_ajax_sd_confirm_job', [__CLASS__, 'confirm_job']);
         add_action('wp_ajax_sd_complete_job', [__CLASS__, 'complete_job']);
         add_action('wp_ajax_sd_move_stage', [__CLASS__, 'move_stage']);
+        add_action('wp_ajax_sd_admin_approve', [__CLASS__, 'admin_approve']);
+        add_action('wp_ajax_sd_admin_reject', [__CLASS__, 'admin_reject']);
+        add_action('wp_ajax_sd_admin_send_notes', [__CLASS__, 'admin_send_notes']);
     }
 
     public static function claim_job() {
@@ -114,5 +117,49 @@ class SD_Ajax_Handlers {
         );
 
         wp_send_json_success(['message' => 'Stage updated.']);
+    }
+
+    public static function admin_approve() {
+        check_ajax_referer('sd_admin_nonce', 'nonce');
+        if (!current_user_can('manage_options')) wp_send_json_error(['message' => 'Permission denied.']);
+
+        $job_id = intval($_POST['job_id'] ?? 0);
+        if (!$job_id) wp_send_json_error(['message' => 'Invalid job.']);
+
+        update_post_meta($job_id, '_sd_stage', 'approved-priced');
+        update_post_meta($job_id, '_sd_admin_status', 'approved');
+        SD_Meta_Boxes::add_timeline_event($job_id, 'Admin approved the request', '#8b5cf6');
+
+        wp_send_json_success(['message' => 'Request approved. You can now post it to vendors.']);
+    }
+
+    public static function admin_reject() {
+        check_ajax_referer('sd_admin_nonce', 'nonce');
+        if (!current_user_can('manage_options')) wp_send_json_error(['message' => 'Permission denied.']);
+
+        $job_id = intval($_POST['job_id'] ?? 0);
+        $reason = sanitize_textarea_field($_POST['reason'] ?? '');
+        if (!$job_id) wp_send_json_error(['message' => 'Invalid job.']);
+
+        update_post_meta($job_id, '_sd_admin_status', 'rejected');
+        if ($reason) update_post_meta($job_id, '_sd_admin_notes', $reason);
+        SD_Meta_Boxes::add_timeline_event($job_id, 'Admin rejected the request' . ($reason ? ': ' . $reason : ''), '#ef4444');
+
+        wp_send_json_success(['message' => 'Request rejected.']);
+    }
+
+    public static function admin_send_notes() {
+        check_ajax_referer('sd_admin_nonce', 'nonce');
+        if (!current_user_can('manage_options')) wp_send_json_error(['message' => 'Permission denied.']);
+
+        $job_id = intval($_POST['job_id'] ?? 0);
+        $notes = sanitize_textarea_field($_POST['notes'] ?? '');
+        if (!$job_id || !$notes) wp_send_json_error(['message' => 'Job ID and notes are required.']);
+
+        update_post_meta($job_id, '_sd_admin_status', 'needs-revision');
+        update_post_meta($job_id, '_sd_admin_notes', $notes);
+        SD_Meta_Boxes::add_timeline_event($job_id, 'Admin sent notes to client: ' . wp_trim_words($notes, 15), '#f59e0b');
+
+        wp_send_json_success(['message' => 'Notes sent to client.']);
     }
 }

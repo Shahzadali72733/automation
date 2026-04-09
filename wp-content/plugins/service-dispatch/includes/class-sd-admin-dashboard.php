@@ -24,6 +24,7 @@ class SD_Admin_Dashboard {
         add_submenu_page('sd-pipeline', 'Add New Job', 'Add New Job', 'manage_options', 'post-new.php?post_type=sd_job');
         add_submenu_page('sd-pipeline', 'Vendors', 'Vendors', 'manage_options', 'sd-vendors', [__CLASS__, 'render_vendors_page']);
         add_submenu_page('sd-pipeline', 'Clients', 'Clients', 'manage_options', 'sd-clients', [__CLASS__, 'render_clients_page']);
+        add_submenu_page('sd-pipeline', 'Form Entries', 'Form Entries', 'manage_options', 'sd-form-entries', [__CLASS__, 'render_form_entries_page']);
         add_submenu_page('sd-pipeline', 'SMS Log', 'SMS Log', 'manage_options', 'sd-sms-log', [__CLASS__, 'render_sms_log_page']);
         add_submenu_page('sd-pipeline', 'Settings', 'Settings', 'manage_options', 'sd-settings', [__CLASS__, 'render_settings_page']);
     }
@@ -341,6 +342,49 @@ class SD_Admin_Dashboard {
                     <?php endforeach; ?>
                 <?php endif; ?>
             </div>
+        </div>
+        <?php
+    }
+
+    public static function render_form_entries_page() {
+        $service_form_id = get_option('sd_service_request_form_id');
+        $vendor_form_id  = get_option('sd_vendor_form_id');
+        $client_form_id  = get_option('sd_client_onboarding_form_id');
+        ?>
+        <div class="wrap">
+            <div class="sd-page-header">
+                <h1><span class="dashicons dashicons-list-view"></span> Form Entries</h1>
+            </div>
+            <div class="sd-form-entries-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:20px;">
+                <?php if ($service_form_id): ?>
+                <a href="<?php echo admin_url('admin.php?page=fluent_forms&route=entries&form_id=' . $service_form_id); ?>" class="sd-fe-card" style="display:block;padding:24px;background:#eff6ff;border:1px solid #93c5fd;border-radius:12px;text-decoration:none;">
+                    <span class="dashicons dashicons-clipboard" style="font-size:28px;color:#2563eb;margin-bottom:8px;"></span>
+                    <h3 style="margin:0 0 4px;color:#1e3a8a;font-size:16px;">Service Request Entries</h3>
+                    <p style="margin:0;color:#1d4ed8;font-size:13px;">View all service request submissions with photos and details</p>
+                </a>
+                <?php endif; ?>
+                <?php if ($vendor_form_id): ?>
+                <a href="<?php echo admin_url('admin.php?page=fluent_forms&route=entries&form_id=' . $vendor_form_id); ?>" class="sd-fe-card" style="display:block;padding:24px;background:#fef3c7;border:1px solid #fde68a;border-radius:12px;text-decoration:none;">
+                    <span class="dashicons dashicons-groups" style="font-size:28px;color:#d97706;margin-bottom:8px;"></span>
+                    <h3 style="margin:0 0 4px;color:#92400e;font-size:16px;">Vendor Registration Entries</h3>
+                    <p style="margin:0;color:#a16207;font-size:13px;">View vendor registration applications</p>
+                </a>
+                <?php endif; ?>
+                <?php if ($client_form_id): ?>
+                <a href="<?php echo admin_url('admin.php?page=fluent_forms&route=entries&form_id=' . $client_form_id); ?>" class="sd-fe-card" style="display:block;padding:24px;background:#d1fae5;border:1px solid #6ee7b7;border-radius:12px;text-decoration:none;">
+                    <span class="dashicons dashicons-id-alt" style="font-size:28px;color:#059669;margin-bottom:8px;"></span>
+                    <h3 style="margin:0 0 4px;color:#065f46;font-size:16px;">Client Onboarding Entries</h3>
+                    <p style="margin:0;color:#047857;font-size:13px;">View client onboarding submissions</p>
+                </a>
+                <?php endif; ?>
+            </div>
+            <?php if (!$service_form_id && !$vendor_form_id && !$client_form_id): ?>
+            <div class="sd-empty-state">
+                <span class="dashicons dashicons-list-view"></span>
+                <h3>No forms created yet</h3>
+                <p>Forms will be created automatically on next admin page load.</p>
+            </div>
+            <?php endif; ?>
         </div>
         <?php
     }
