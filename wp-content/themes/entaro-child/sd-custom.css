@@ -252,18 +252,48 @@
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
 }
 
+/* Submit: white label + trailing arrow (inline SVG, no external icon font). */
 .fluentform .ff-btn-submit {
     background: #3b82f6 !important;
     border: none !important;
-    padding: 12px 28px !important;
+    padding: 12px 24px 12px 28px !important;
     border-radius: 8px !important;
     font-size: 15px !important;
     font-weight: 600 !important;
-    transition: background 0.2s !important;
+    transition: background 0.2s, color 0.2s !important;
+    color: #ffffff !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.45em !important;
+    line-height: 1.2 !important;
 }
 
-.fluentform .ff-btn-submit:hover {
+.fluentform .ff-btn-submit:hover,
+.fluentform .ff-btn-submit:focus {
     background: #2563eb !important;
+    color: #ffffff !important;
+}
+
+/* Material-style forward arrow (filled path, white on button). */
+.fluentform .ff-btn-submit::after {
+    content: '' !important;
+    display: inline-block !important;
+    width: 1.15em !important;
+    height: 1.15em !important;
+    flex-shrink: 0 !important;
+    background: transparent no-repeat center / contain !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'%3E%3Cpath d='M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8-8-8z'/%3E%3C/svg%3E") !important;
+}
+
+.fluentform .ff-el-section-break hr {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    overflow: hidden !important;
 }
 
 .fluentform .ff-el-section-break .ff-el-section-title {
@@ -302,41 +332,22 @@ body.page-slug-service-request #main-container #main-content.main-page {
 
 body.page-slug-service-request .inner.container,
 body.page-slug-service-request .inner.container-fluid {
-    max-width: 1000px;
-    margin: 0 auto;
-}
-
-body.page-slug-service-request .fluentform {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 14px;
-    padding: 24px;
-    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
-}
-
-body.page-slug-service-request .fluentform .ff-el-group {
-    margin-bottom: 16px;
-}
-
-body.page-slug-service-request .fluentform .ff-el-section-break {
-    margin-top: 18px;
-    margin-bottom: 12px;
-}
-
-body.page-slug-service-request .fluentform .ff-el-section-break hr {
-    border-color: #e5e7eb;
-}
-
-/* Service-request fine-tuned spacing and typography */
-body.page-slug-service-request .inner.container,
-body.page-slug-service-request .inner.container-fluid {
-    max-width: 1080px;
+    max-width: 1100px;
+    margin-left: auto;
+    margin-right: auto;
     padding-left: 24px;
     padding-right: 24px;
 }
 
 body.page-slug-service-request .fluentform {
-    padding: 30px 30px 24px;
+    max-width: 1100px;
+    margin-left: auto;
+    margin-right: auto;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 30px 30px 28px;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
 }
 
 body.page-slug-service-request .fluentform .ff-el-group {
@@ -346,6 +357,36 @@ body.page-slug-service-request .fluentform .ff-el-group {
 body.page-slug-service-request .fluentform .ff-el-section-break {
     margin-top: 26px;
     margin-bottom: 14px;
+}
+
+/* Two-column Fluent Form containers */
+body.page-slug-service-request .fluentform .ff-t-container.ff-column-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 20px;
+    margin-bottom: 4px;
+}
+
+body.page-slug-service-request .fluentform .ff-t-container .ff-t-cell {
+    box-sizing: border-box;
+    min-width: 0;
+}
+
+body.page-slug-service-request .fluentform .ff-t-container.ff_columns_total_2 .ff-t-cell {
+    flex: 1 1 calc(50% - 10px) !important;
+    max-width: calc(50% - 10px) !important;
+}
+
+body.page-slug-service-request .fluentform .ff-t-container.ff_columns_total_1 .ff-t-cell,
+body.page-slug-service-request .fluentform .sd-ff-row-1 .ff-t-cell {
+    flex: 1 1 100% !important;
+    max-width: 100% !important;
+}
+
+body.page-slug-service-request .fluentform .sd-ff-submit-wrap {
+    text-align: center;
+    margin-top: 8px;
+    width: 100%;
 }
 
 body.page-slug-service-request .fluentform .ff-el-section-break .ff-el-section-title {
@@ -394,18 +435,38 @@ body.page-slug-service-request .fluentform .ff-el-input--content .ff-el-form-con
 body.page-slug-service-request .fluentform .ff_btn_style,
 body.page-slug-service-request .fluentform .ff-btn-submit {
     min-height: 46px;
-    padding: 11px 26px !important;
+    padding: 11px 22px 11px 26px !important;
     border-radius: 10px !important;
     background: #2563eb !important;
-    color: #fff !important;
+    color: #ffffff !important;
     font-size: 15px !important;
     font-weight: 600 !important;
     letter-spacing: 0.1px;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.45em !important;
 }
 
 body.page-slug-service-request .fluentform .ff_btn_style:hover,
-body.page-slug-service-request .fluentform .ff-btn-submit:hover {
+body.page-slug-service-request .fluentform .ff-btn-submit:hover,
+body.page-slug-service-request .fluentform .ff_btn_style:focus,
+body.page-slug-service-request .fluentform .ff-btn-submit:focus {
     background: #1d4ed8 !important;
+    color: #ffffff !important;
+}
+
+body.page-slug-service-request .fluentform .ff-btn-submit::after {
+    width: 1.15em !important;
+    height: 1.15em !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'%3E%3Cpath d='M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8-8-8z'/%3E%3C/svg%3E") !important;
+}
+
+@media (max-width: 767px) {
+    body.page-slug-service-request .fluentform .ff-t-container.ff_columns_total_2 .ff-t-cell {
+        flex: 1 1 100% !important;
+        max-width: 100% !important;
+    }
 }
 
 @media (max-width: 768px) {
@@ -419,6 +480,108 @@ body.page-slug-service-request .fluentform .ff-btn-submit:hover {
         padding: 20px 16px 18px;
         border-radius: 12px;
     }
+}
+
+/* ── Service Request: success modal ── */
+body.sd-sr-modal-open {
+    overflow: hidden;
+}
+
+.sd-sr-modal-root[hidden] {
+    display: none !important;
+}
+
+.sd-sr-modal-root.is-open {
+    display: flex !important;
+    position: fixed;
+    inset: 0;
+    z-index: 100000;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    box-sizing: border-box;
+}
+
+.sd-sr-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(2px);
+}
+
+.sd-sr-modal-panel {
+    position: relative;
+    z-index: 1;
+    max-width: 480px;
+    width: 100%;
+    background: #fff;
+    border-radius: 16px;
+    padding: 32px 28px 28px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.18);
+    text-align: center;
+    border: 1px solid #e2e8f0;
+}
+
+.sd-sr-modal-close {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    border: none;
+    background: transparent;
+    font-size: 28px;
+    line-height: 1;
+    color: #94a3b8;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 8px;
+}
+
+.sd-sr-modal-close:hover {
+    color: #0f172a;
+    background: #f1f5f9;
+}
+
+.sd-sr-modal-icon {
+    font-size: 40px;
+    line-height: 1;
+    margin-bottom: 12px;
+}
+
+.sd-sr-modal-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 12px;
+}
+
+.sd-sr-modal-message {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #475569;
+    margin-bottom: 24px;
+}
+
+.sd-sr-modal-message p {
+    margin: 0;
+}
+
+.sd-sr-modal-home {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 24px;
+    background: #2563eb;
+    color: #fff !important;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 10px;
+    text-decoration: none !important;
+    transition: background 0.2s;
+}
+
+.sd-sr-modal-home:hover {
+    background: #1d4ed8;
+    color: #fff !important;
 }
 
 /* ── Login Required Gate ── */

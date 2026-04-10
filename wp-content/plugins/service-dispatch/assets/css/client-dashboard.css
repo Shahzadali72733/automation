@@ -4,3 +4,29 @@
 .sd-client-dash .sd-saas-sidebar {
     background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
 }
+
+.sd-assigned-provider {
+    margin-top: 12px;
+    padding: 12px 14px;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 10px;
+    font-size: 13px;
+    color: #1e3a5f;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.sd-assigned-provider strong {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #1d4ed8;
+}
+
+.sd-assigned-provider .sd-provider-email,
+.sd-assigned-provider .sd-provider-phone {
+    font-size: 12px;
+    color: #475569;
+}

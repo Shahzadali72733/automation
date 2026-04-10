@@ -9,9 +9,69 @@
 // ──────────────────────────────────────────────
 function entaro_child_enqueue_styles() {
     wp_enqueue_style('entaro-child-style', get_stylesheet_uri());
-    wp_enqueue_style('sd-child-custom', get_stylesheet_directory_uri() . '/sd-custom.css', [], '1.0.0');
+    wp_enqueue_style('sd-child-custom', get_stylesheet_directory_uri() . '/sd-custom.css', [], '1.1.0');
 }
 add_action('wp_enqueue_scripts', 'entaro_child_enqueue_styles', 100);
+
+/** Service Request page: success modal script + localized copy */
+function sd_enqueue_service_request_form_assets() {
+    if (!is_page('service-request')) {
+        return;
+    }
+    $form_id = (int) get_option('sd_service_request_form_id');
+    $deps    = ['jquery'];
+    if (wp_script_is('fluent-form-submission', 'registered')) {
+        $deps[] = 'fluent-form-submission';
+    }
+    wp_enqueue_script(
+        'sd-service-request-form',
+        get_stylesheet_directory_uri() . '/sd-service-request-form.js',
+        $deps,
+        '1.1.0',
+        true
+    );
+    wp_localize_script('sd-service-request-form', 'sdSrForm', [
+        'formId'       => $form_id,
+        'title'        => 'Request Received',
+        'message'      => 'Thanks — we received your request. Our team will review details and follow up to confirm scheduling and final pricing.',
+        'homeUrl'      => home_url('/'),
+        'homeLabel'    => 'Back to Home',
+    ]);
+}
+add_action('wp_enqueue_scripts', 'sd_enqueue_service_request_form_assets', 110);
+
+/** Modal shell for service-request success (filled by JS) */
+function sd_service_request_success_modal_markup() {
+    if (!is_page('service-request')) {
+        return;
+    }
+    ?>
+    <div id="sd-sr-modal-root" class="sd-sr-modal-root" hidden>
+        <div class="sd-sr-modal-backdrop" tabindex="-1"></div>
+        <div class="sd-sr-modal-panel" role="dialog" aria-modal="true" aria-labelledby="sd-sr-modal-title">
+            <button type="button" class="sd-sr-modal-close" aria-label="<?php esc_attr_e('Close', 'entaro-child'); ?>">&times;</button>
+            <div class="sd-sr-modal-icon" aria-hidden="true">✅</div>
+            <h2 id="sd-sr-modal-title" class="sd-sr-modal-title"></h2>
+            <div class="sd-sr-modal-message"></div>
+            <a href="<?php echo esc_url(home_url('/')); ?>" class="sd-sr-modal-home"><?php esc_html_e('Back to Home', 'entaro-child'); ?></a>
+        </div>
+    </div>
+    <?php
+}
+add_action('wp_footer', 'sd_service_request_success_modal_markup', 5);
+
+/** Hide Fluent Forms inline success HTML so we only show the modal */
+add_filter('fluentform/submission_confirmation', 'sd_service_request_suppress_inline_confirmation', 10, 5);
+function sd_service_request_suppress_inline_confirmation($returnData, $form, $confirmation, $insertId, $formData) {
+    $fid = (int) get_option('sd_service_request_form_id');
+    if (!$fid || !isset($form->id) || (int) $form->id !== $fid) {
+        return $returnData;
+    }
+    if (isset($returnData['message'])) {
+        $returnData['message'] = '<div class="sd-sr-suppress-inline" style="display:none!important" aria-hidden="true"></div>';
+    }
+    return $returnData;
+}
 
 // ──────────────────────────────────────────────
 // 2. OVERRIDE REGISTRATION ROLES
@@ -199,15 +259,29 @@ add_action('wp_footer', 'sd_override_all_labels', 6);
 function sd_wc_account_menu_items($items) {
     $user = wp_get_current_user();
 
+    // Vendors: single dashboard + account links only (no top WC bar — sidebar in template).
+    // Orders, Downloads, and default Dashboard entry are omitted.
+    if (in_array('sd_vendor', $user->roles, true)) {
+        $out = [
+            'vendor-portal' => __('Dashboard', 'woocommerce'),
+        ];
+        foreach (['edit-address', 'payment-methods', 'edit-account', 'customer-logout'] as $key) {
+            if (isset($items[$key])) {
+                $out[$key] = $items[$key];
+            }
+        }
+        return $out;
+    }
+
     $new_items = [];
     foreach ($items as $key => $label) {
         if ($key === 'dashboard') {
             $new_items[$key] = $label;
-            if (in_array('sd_vendor', $user->roles) || in_array('administrator', $user->roles)) {
-                $new_items['vendor-portal'] = 'Vendor Dashboard';
+            if (in_array('administrator', $user->roles)) {
+                $new_items['vendor-portal'] = __('Vendor Dashboard', 'entaro-child');
             }
             if (in_array('sd_client', $user->roles) || in_array('subscriber', $user->roles) || in_array('administrator', $user->roles)) {
-                $new_items['service-requests'] = 'Service Requests';
+                $new_items['service-requests'] = __('Service Requests', 'entaro-child');
             }
         } else {
             $new_items[$key] = $label;
@@ -229,9 +303,46 @@ function sd_wc_vendor_portal_content() {
         echo '<p>Access denied. This section is for vendors only.</p>';
         return;
     }
-    echo do_shortcode('[sd_vendor_dashboard]');
+    if (!class_exists('SD_Vendor_Dashboard')) {
+        echo do_shortcode('[sd_vendor_dashboard]');
+        return;
+    }
+    echo SD_Vendor_Dashboard::render_vendor_portal_endpoint_output();
 }
 add_action('woocommerce_account_vendor-portal_endpoint', 'sd_wc_vendor_portal_content');
+
+/** Vendors: land on the portal dashboard instead of the default WooCommerce dashboard. */
+function sd_redirect_vendor_my_account_root_to_portal() {
+    if (!function_exists('is_account_page') || !is_account_page() || !is_user_logged_in()) {
+        return;
+    }
+    if (!in_array('sd_vendor', wp_get_current_user()->roles, true)) {
+        return;
+    }
+    if (!function_exists('WC') || !WC()->query) {
+        return;
+    }
+    if (WC()->query->get_current_endpoint() !== '') {
+        return;
+    }
+    $target = wc_get_account_endpoint_url('vendor-portal');
+    if ($target) {
+        wp_safe_redirect($target);
+        exit;
+    }
+}
+add_action('template_redirect', 'sd_redirect_vendor_my_account_root_to_portal', 20);
+
+function sd_vendor_account_body_class($classes) {
+    if (!function_exists('is_account_page') || !is_account_page() || !is_user_logged_in()) {
+        return $classes;
+    }
+    if (in_array('sd_vendor', wp_get_current_user()->roles, true)) {
+        $classes[] = 'sd-vendor-wc-account';
+    }
+    return $classes;
+}
+add_filter('body_class', 'sd_vendor_account_body_class');
 
 function sd_wc_service_requests_content() {
     $user = wp_get_current_user();
@@ -310,7 +421,7 @@ function sd_create_required_pages_once() {
 // 10. CREATE FLUENT FORMS PROGRAMMATICALLY
 // ──────────────────────────────────────────────
 function sd_create_fluent_forms() {
-    $current_version = 3;
+    $current_version = 6;
     if ((int) get_option('sd_forms_version', 0) >= $current_version) return;
     if (!function_exists('wpFluent')) return;
 
@@ -332,57 +443,68 @@ function sd_create_service_request_form() {
 
     $existing = $wpdb->get_var($wpdb->prepare("SELECT id FROM $table WHERE title = %s", 'Commercial Service Request'));
 
+    $submit_label = 'Submit Service Request';
     $form_fields = json_encode([
         'fields' => [
-            // Section 1: Contact Info
             sd_ff_section_break('Contact Information'),
-            sd_ff_text('names', 'Full Name', true, 'input_text', 'Your full name'),
-            sd_ff_text('sd_company', 'Company Name', true, 'input_text', 'Your company name'),
-            sd_ff_text('phone', 'Phone Number', true, 'phone', '+1 (555) 000-0000'),
-            sd_ff_text('email', 'Email Address', true, 'email', 'your@email.com'),
+            sd_ff_container_two_col(
+                sd_ff_text('names', 'Full Name', true, 'input_text', 'Your full name'),
+                sd_ff_text('sd_company', 'Company Name', true, 'input_text', 'Your company name')
+            ),
+            sd_ff_container_two_col(
+                sd_ff_text('phone', 'Phone Number', true, 'phone', '+1 (555) 000-0000'),
+                sd_ff_text('email', 'Email Address', true, 'email', 'your@email.com')
+            ),
 
-            // Section 2: Location Details
             sd_ff_section_break('Location Details'),
-            sd_ff_text('sd_address', 'Service Address', true, 'input_text', '123 Main St'),
-            sd_ff_text('sd_city', 'City', true, 'input_text', 'Houston'),
-            sd_ff_text('sd_state', 'State', true, 'input_text', 'TX'),
-            sd_ff_text('sd_zip', 'Zip Code', true, 'input_text', '77001'),
-            sd_ff_text('sd_site_name', 'Site Name / Store Name', false, 'input_text', 'Westheimer Retail Store'),
+            sd_ff_container_one(sd_ff_text('sd_address', 'Service Address', true, 'input_text', '123 Main St')),
+            sd_ff_container_two_col(
+                sd_ff_text('sd_city', 'City', true, 'input_text', 'Houston'),
+                sd_ff_text('sd_state', 'State', true, 'input_text', 'TX')
+            ),
+            sd_ff_container_two_col(
+                sd_ff_text('sd_zip', 'Zip Code', true, 'input_text', '77001'),
+                sd_ff_text('sd_site_name', 'Site Name / Store Name', false, 'input_text', 'Westheimer Retail Store')
+            ),
 
-            // Section 3: Service Request Details
             sd_ff_section_break('Service Request Details'),
-            sd_ff_select('sd_service_type', 'Service Type', true, [
-                'General Maintenance', 'Housekeeping / Janitorial', 'Floor Care',
-                'Carpet Care', 'Window Cleaning', 'Power Washing',
-                'Graffiti Removal', 'Lighting / Electrical', 'Plumbing',
-                'HVAC', 'Painting', 'Other (Describe Below)',
-            ]),
-            sd_ff_textarea('sd_description', 'Describe the Issue / Request', true, 'Please describe what you need done, what areas are affected, and any important details.'),
-            sd_ff_select('sd_urgency', 'Urgency Level', true, [
-                'Routine (3–5 business days)',
-                'Priority (1–2 business days)',
-                'Urgent (same/next day if available)',
-            ]),
-            sd_ff_text('sd_preferred_date', 'Preferred Service Date', false, 'input_date', ''),
-            sd_ff_select('sd_time_window', 'Preferred Time Window', false, [
-                'Morning (8am–12pm)', 'Afternoon (12pm–4pm)', 'Evening (4pm–8pm)',
-            ]),
+            sd_ff_container_two_col(
+                sd_ff_select('sd_service_type', 'Service Type', true, [
+                    'General Maintenance', 'Housekeeping / Janitorial', 'Floor Care',
+                    'Carpet Care', 'Window Cleaning', 'Power Washing',
+                    'Graffiti Removal', 'Lighting / Electrical', 'Plumbing',
+                    'HVAC', 'Painting', 'Other (Describe Below)',
+                ]),
+                sd_ff_select('sd_urgency', 'Urgency Level', true, [
+                    'Routine (3–5 business days)',
+                    'Priority (1–2 business days)',
+                    'Urgent (same/next day if available)',
+                ])
+            ),
+            sd_ff_container_one(sd_ff_textarea('sd_description', 'Describe the Issue / Request', true, 'Please describe what you need done, what areas are affected, and any important details.')),
+            sd_ff_container_two_col(
+                sd_ff_text('sd_preferred_date', 'Preferred Service Date', false, 'input_date', ''),
+                sd_ff_select('sd_time_window', 'Preferred Time Window', false, [
+                    'Morning (8am–12pm)', 'Afternoon (12pm–4pm)', 'Evening (4pm–8pm)',
+                ])
+            ),
 
-            // Section 4: Access + On-Site Contact
             sd_ff_section_break('Access + On-Site Contact'),
-            sd_ff_text('sd_onsite_name', 'On-Site Contact Name', true, 'input_text', ''),
-            sd_ff_text('sd_onsite_phone', 'On-Site Contact Phone', true, 'phone', '+1 (555) 000-0000'),
-            sd_ff_textarea('sd_access_instructions', 'Access Instructions', false, 'Lockbox, key holder, check-in desk, loading dock info...'),
+            sd_ff_container_two_col(
+                sd_ff_text('sd_onsite_name', 'On-Site Contact Name', true, 'input_text', ''),
+                sd_ff_text('sd_onsite_phone', 'On-Site Contact Phone', true, 'phone', '+1 (555) 000-0000')
+            ),
+            sd_ff_container_one(sd_ff_textarea('sd_access_instructions', 'Access Instructions', false, 'Lockbox, key holder, check-in desk, loading dock info...')),
 
-            // Section 5: Photos & Documents
             sd_ff_section_break('Photos & Documents'),
-            sd_ff_image_upload('sd_photos', 'Photos of the Issue / Area', false, 'Upload clear photos of the issue or work area. This helps us quote and dispatch faster.', 10),
-            sd_ff_file_upload('sd_documents', 'Supporting Documents', false, 'Upload any related documents (floor plans, POs, scope sheets, etc.)'),
+            sd_ff_container_two_col(
+                sd_ff_image_upload('sd_photos', 'Photos of the Issue / Area', false, 'Upload clear photos of the issue or work area. This helps us quote and dispatch faster.', 10),
+                sd_ff_file_upload('sd_documents', 'Supporting Documents', false, 'Upload any related documents (floor plans, POs, scope sheets, etc.)')
+            ),
 
-            // Section 6: Consent
             sd_ff_section_break('Pricing Disclosure + Consent'),
-            sd_ff_checkbox('sd_pricing_consent', 'I understand typical pricing ranges (if shown) are estimates only. Final pricing is confirmed after review and scheduling.', true),
-            sd_ff_checkbox('sd_sms_consent', 'I agree to receive SMS/email updates regarding my service request. Reply STOP to opt out.', true),
+            sd_ff_container_one(sd_ff_checkbox('sd_pricing_consent', 'I understand typical pricing ranges (if shown) are estimates only. Final pricing is confirmed after review and scheduling.', true)),
+            sd_ff_container_one(sd_ff_checkbox('sd_sms_consent', 'I agree to receive SMS/email updates regarding my service request. Reply STOP to opt out.', true)),
         ],
         'submitButton' => [
             'uniqElKey' => 'el_submit',
@@ -392,12 +514,12 @@ function sd_create_service_request_form() {
                 'class' => '',
             ],
             'settings' => [
-                'align'          => 'left',
+                'align'          => 'center',
                 'button_style'   => 'default',
-                'container_class' => '',
+                'container_class' => 'sd-ff-submit-wrap',
                 'button_size'    => 'md',
-                'btn_text'       => 'Submit Service Request',
-                'button_ui'      => ['type' => 'default', 'text' => 'Submit Service Request', 'img_url' => ''],
+                'btn_text'       => $submit_label,
+                'button_ui'      => ['type' => 'default', 'text' => $submit_label, 'img_url' => ''],
             ],
         ],
     ]);
@@ -432,11 +554,19 @@ function sd_create_service_request_form() {
     $meta_table = $wpdb->prefix . 'fluentform_form_meta';
     $form_settings_value = json_encode([
         'confirmation' => [
-            'redirectTo'   => 'samePage',
-            'messageToShow' => '<h3>Request Received</h3><p>Thanks — we received your request. Our team will review details and follow up to confirm scheduling and final pricing.</p>',
+            'redirectTo'           => 'samePage',
+            'messageToShow'        => '<p class="sd-sr-inline-fallback">Thanks — we received your request.</p>',
             'samePageFormBehavior' => 'hide_form',
         ],
-        'layout' => ['labelPlacement' => 'top', 'helpMessagePlacement' => 'with_label', 'asteriskPlacement' => 'asterisk-right'],
+        // Full layout keys: Fluent Form merges form meta with defaults shallowly, so a partial
+        // `layout` drops `errorMessagePlacement` and validation errors pile at the form end.
+        'layout' => [
+            'labelPlacement'        => 'top',
+            'helpMessagePlacement'  => 'with_label',
+            'errorMessagePlacement' => 'inline',
+            'cssClassName'          => '',
+            'asteriskPlacement'     => 'asterisk-right',
+        ],
     ]);
     $meta_exists = $wpdb->get_var($wpdb->prepare(
         "SELECT id FROM {$meta_table} WHERE form_id = %d AND meta_key = %s",
@@ -619,6 +749,12 @@ function sd_create_client_onboarding_form() {
 // ──────────────────────────────────────────────
 // FLUENT FORMS FIELD HELPERS
 // ──────────────────────────────────────────────
+
+/** Inline validation copy (shown under the field when errorMessagePlacement is inline). */
+function sd_ff_field_required_message($label) {
+    return $label . ' is required';
+}
+
 function sd_ff_text($name, $label, $required, $type = 'input_text', $placeholder = '') {
     $element = 'input_text';
     $input_type = 'text';
@@ -645,7 +781,7 @@ function sd_ff_text($name, $label, $required, $type = 'input_text', $placeholder
                 'label_placement'   => '',
                 'admin_field_label' => $name,
                 'help_message'      => '',
-                'validation_rules'  => $required ? ['required' => ['value' => true, 'message' => 'This field is required']] : [],
+                'validation_rules'  => $required ? ['required' => ['value' => true, 'message' => sd_ff_field_required_message($label)]] : [],
                 'conditional_logics' => [],
                 'date_format'       => 'm/d/Y',
                 'date_config'       => '{}',
@@ -654,6 +790,14 @@ function sd_ff_text($name, $label, $required, $type = 'input_text', $placeholder
                 'title' => $label,
             ],
         ];
+    }
+
+    $validation_rules = [];
+    if ($required) {
+        $validation_rules['required'] = ['value' => true, 'message' => sd_ff_field_required_message($label)];
+    }
+    if ($element === 'input_email') {
+        $validation_rules['email'] = ['value' => true, 'message' => $label . ' must be a valid email address'];
     }
 
     return [
@@ -673,7 +817,7 @@ function sd_ff_text($name, $label, $required, $type = 'input_text', $placeholder
             'label_placement'   => '',
             'admin_field_label' => $name,
             'help_message'      => '',
-            'validation_rules'  => $required ? ['required' => ['value' => true, 'message' => 'This field is required']] : [],
+            'validation_rules'  => $validation_rules,
             'conditional_logics' => [],
         ],
         'editor_options' => [
@@ -698,7 +842,7 @@ function sd_ff_textarea($name, $label, $required, $placeholder = '') {
             'container_class'   => '',
             'label'             => $label,
             'admin_field_label' => $name,
-            'validation_rules'  => $required ? ['required' => ['value' => true, 'message' => 'This field is required']] : [],
+            'validation_rules'  => $required ? ['required' => ['value' => true, 'message' => sd_ff_field_required_message($label)]] : [],
         ],
     ];
 }
@@ -722,7 +866,7 @@ function sd_ff_select($name, $label, $required, $options) {
             'label'             => $label,
             'admin_field_label' => $name,
             'placeholder'       => '— Select —',
-            'validation_rules'  => $required ? ['required' => ['value' => true, 'message' => 'This field is required']] : [],
+            'validation_rules'  => $required ? ['required' => ['value' => true, 'message' => sd_ff_field_required_message($label)]] : [],
             'advanced_options'  => $ff_options,
             'calc_value_status' => false,
         ],
@@ -748,7 +892,7 @@ function sd_ff_multi_select($name, $label, $required, $options) {
             'container_class'   => '',
             'label'             => $label,
             'admin_field_label' => $name,
-            'validation_rules'  => $required ? ['required' => ['value' => true, 'message' => 'This field is required']] : [],
+            'validation_rules'  => $required ? ['required' => ['value' => true, 'message' => sd_ff_field_required_message($label)]] : [],
             'advanced_options'  => $ff_options,
         ],
     ];
@@ -798,7 +942,7 @@ function sd_ff_image_upload($name, $label, $required, $help = '', $max_count = 1
             'help_message'         => $help,
             'upload_bttn_ui'       => '',
             'validation_rules' => [
-                'required'            => ['value' => $required, 'message' => 'This field is required'],
+                'required'            => ['value' => $required, 'message' => sd_ff_field_required_message($label)],
                 'max_file_size'       => ['value' => 5242880, '_valueFrom' => 'MB', 'message' => 'Maximum file size is 5MB'],
                 'max_file_count'      => ['value' => $max_count, 'message' => 'Maximum ' . $max_count . ' files allowed'],
                 'allowed_image_types' => ['value' => ['jpg', 'jpeg', 'png', 'gif'], 'message' => 'Only jpg, jpeg, png, gif files are allowed'],
@@ -835,7 +979,7 @@ function sd_ff_file_upload($name, $label, $required, $help = '') {
             'help_message'         => $help,
             'upload_bttn_ui'       => '',
             'validation_rules' => [
-                'required'           => ['value' => $required, 'message' => 'This field is required'],
+                'required'           => ['value' => $required, 'message' => sd_ff_field_required_message($label)],
                 'max_file_size'      => ['value' => 10485760, '_valueFrom' => 'MB', 'message' => 'Maximum file size is 10MB'],
                 'max_file_count'     => ['value' => 5, 'message' => 'Maximum 5 files allowed'],
                 'allowed_file_types' => ['value' => ['jpg','jpeg','png','gif','pdf','doc','docx'], 'message' => 'File type not allowed'],
@@ -865,6 +1009,99 @@ function sd_ff_section_break($title) {
             'container_class' => '',
         ],
     ];
+}
+
+/** Two-column row (50% / 50%) for Fluent Forms container element */
+function sd_ff_container_two_col($left_field, $right_field, $extra_class = '') {
+    $class = trim('sd-ff-row-2 ' . $extra_class);
+    return [
+        'element'    => 'container',
+        'uniqElKey'  => 'el_c_' . substr(md5(($left_field['uniqElKey'] ?? '') . ($right_field['uniqElKey'] ?? '')), 0, 10),
+        'attributes' => [],
+        'settings'   => [
+            'container_class'    => $class,
+            'conditional_logics'   => [],
+            'is_width_auto_calc' => true,
+        ],
+        'columns' => [
+            ['width' => 50, 'fields' => [$left_field]],
+            ['width' => 50, 'fields' => [$right_field]],
+        ],
+    ];
+}
+
+/** Single full-width row inside a container */
+function sd_ff_container_one($field, $extra_class = '') {
+    $class = trim('sd-ff-row-1 ' . $extra_class);
+    return [
+        'element'    => 'container',
+        'uniqElKey'  => 'el_1_' . substr(md5($field['uniqElKey'] ?? 'field'), 0, 10),
+        'attributes' => [],
+        'settings'   => [
+            'container_class'    => $class,
+            'conditional_logics'   => [],
+            'is_width_auto_calc' => true,
+        ],
+        'columns' => [
+            ['width' => 100, 'fields' => [$field]],
+        ],
+    ];
+}
+
+/**
+ * Automation: pipeline meta + FluentCRM list/tags (Service Requests / New Request / tags).
+ */
+function sd_fluentcrm_service_request_automation($formData, $job_id) {
+    update_post_meta($job_id, '_sd_pipeline', 'Service Requests');
+    update_post_meta($job_id, '_sd_pipeline_stage', 'New Request');
+    update_post_meta($job_id, '_sd_automation_tags', ['Client-Request-Submitted', 'Needs-Review']);
+
+    if (!function_exists('FluentCrmApi')) {
+        return;
+    }
+
+    $email = isset($formData['email']) ? sanitize_email($formData['email']) : '';
+    if (!$email || !is_email($email)) {
+        return;
+    }
+
+    $names = isset($formData['names']) ? sanitize_text_field($formData['names']) : '';
+    $parts = preg_split('/\s+/', $names, 2);
+    $first = $parts[0] ?? '';
+    $last  = isset($parts[1]) ? $parts[1] : '';
+
+    try {
+        $tag_models = FluentCrmApi('tags')->importBulk([
+            ['title' => 'Client-Request-Submitted', 'slug' => 'client-request-submitted'],
+            ['title' => 'Needs-Review', 'slug' => 'needs-review'],
+        ]);
+        $tag_ids = array_map(function ($t) {
+            return $t->id;
+        }, $tag_models);
+
+        $list_models = FluentCrmApi('lists')->importBulk([
+            ['title' => 'Service Requests', 'slug' => 'service-requests'],
+        ]);
+        $list_ids = array_map(function ($l) {
+            return $l->id;
+        }, $list_models);
+
+        $contact = FluentCrmApi('contacts')->createOrUpdate([
+            'email'      => $email,
+            'first_name' => $first,
+            'last_name'  => $last,
+            'status'     => 'subscribed',
+        ], true);
+
+        if ($contact) {
+            $contact->attachTags($tag_ids);
+            $contact->attachLists($list_ids);
+        }
+    } catch (\Throwable $e) {
+        if (defined('WP_DEBUG') && WP_DEBUG) {
+            error_log('SD FluentCRM: ' . $e->getMessage());
+        }
+    }
 }
 
 // ──────────────────────────────────────────────
@@ -966,6 +1203,8 @@ function sd_handle_service_request_submission($insertId, $formData, $form) {
     if (is_user_logged_in()) {
         update_post_meta($job_id, '_sd_submitted_by', get_current_user_id());
     }
+
+    sd_fluentcrm_service_request_automation($formData, $job_id);
 
     // Add timeline event
     if (class_exists('SD_Meta_Boxes')) {

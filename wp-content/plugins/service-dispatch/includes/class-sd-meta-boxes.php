@@ -575,7 +575,10 @@ class SD_Meta_Boxes {
         update_post_meta($post_id, '_sd_timeline', $timeline);
     }
 
-    private static function get_all_meta($post_id) {
+    /**
+     * Core job fields stored from the service request (used in admin + vendor detail API).
+     */
+    public static function get_all_meta($post_id) {
         $fields = [
             'client_name', 'company_name', 'client_phone', 'client_email',
             'service_address', 'city', 'state', 'zip',

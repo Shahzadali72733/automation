@@ -11,7 +11,7 @@
 
 if (!defined('ABSPATH')) exit;
 
-define('SD_VERSION', '1.0.0');
+define('SD_VERSION', '1.1.2');
 define('SD_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('SD_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('SD_PLUGIN_BASENAME', plugin_basename(__FILE__));
@@ -71,7 +71,10 @@ final class ServiceDispatch {
     public function enqueue_frontend_assets() {
         global $post, $wp_query;
         $content = ($post && !empty($post->post_content)) ? $post->post_content : '';
-        $is_vendor_page = is_page('vendor-dashboard') || has_shortcode($content, 'sd_vendor_dashboard') || isset($wp_query->query_vars['vendor-portal']);
+        $is_vendor_account = function_exists('is_account_page') && is_account_page() && is_user_logged_in()
+            && in_array('sd_vendor', wp_get_current_user()->roles, true);
+        $is_vendor_page = is_page('vendor-dashboard') || has_shortcode($content, 'sd_vendor_dashboard')
+            || isset($wp_query->query_vars['vendor-portal']) || $is_vendor_account;
         $is_client_page = is_page('client-dashboard') || has_shortcode($content, 'sd_client_dashboard') || isset($wp_query->query_vars['service-requests']);
 
         if ($is_vendor_page || $is_client_page) {

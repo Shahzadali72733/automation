@@ -278,6 +278,9 @@ class SD_Client_Dashboard {
         $admin_notes = get_post_meta($id, '_sd_admin_notes', true);
         $admin_status = get_post_meta($id, '_sd_admin_status', true);
         $desc = $job->post_content;
+        $assigned_vendor_id = (int) get_post_meta($id, '_sd_assigned_vendor', true);
+        $assigned_vendor = $assigned_vendor_id ? get_userdata($assigned_vendor_id) : null;
+        $vendor_phone = $assigned_vendor_id ? get_user_meta($assigned_vendor_id, 'sd_vendor_phone', true) : '';
 
         $service_label = SD_Post_Types::SERVICE_TYPES[$stype] ?? $stype;
         $stage_color = SD_Post_Types::get_stage_color($stage);
@@ -311,6 +314,18 @@ class SD_Client_Dashboard {
                 <div class="sd-admin-feedback <?php echo $admin_status; ?>">
                     <strong>Admin Notes:</strong>
                     <p><?php echo esc_html($admin_notes); ?></p>
+                </div>
+            <?php endif; ?>
+            <?php if ($assigned_vendor): ?>
+                <div class="sd-assigned-provider">
+                    <strong><?php esc_html_e('Assigned provider', 'service-dispatch'); ?></strong>
+                    <span><?php echo esc_html($assigned_vendor->display_name); ?></span>
+                    <?php if ($assigned_vendor->user_email): ?>
+                        <span class="sd-provider-email"><?php echo esc_html($assigned_vendor->user_email); ?></span>
+                    <?php endif; ?>
+                    <?php if ($vendor_phone): ?>
+                        <span class="sd-provider-phone"><?php echo esc_html($vendor_phone); ?></span>
+                    <?php endif; ?>
                 </div>
             <?php endif; ?>
             <div class="sd-progress-wrap">
